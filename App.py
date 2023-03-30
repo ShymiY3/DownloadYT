@@ -6,7 +6,7 @@ from moviepy.editor import VideoFileClip, AudioFileClip, concatenate_videoclips
 from proglog import TqdmProgressBarLogger
 
 
-
+#main app
 class App():
     def __init__(self):
         self.app = QtWidgets.QApplication(sys.argv)
@@ -17,6 +17,7 @@ class App():
         self.ui.b_cancel.clicked.connect(self.cancel)
         self.ui.b_save.clicked.connect(self.save)
 
+    #load button
     def load(self):
         self.url= self.ui.le_load.text()
         self.ui.b_load.setEnabled(False)
@@ -39,11 +40,12 @@ class App():
             self.ui.DisplayError("Invalid link", "Please make sure it's the right link")
             self.ui.pb_load.setMaximum(1)
             self.ui.b_load.setEnabled(True)
-
+    #combobox
     def set_combobox(self):
         for i in self.download.quality:
             self.ui.cb_quality.addItem(f"Resolution: {i['res']} \t FPS: {i['fps']}", i["itag"])
-
+    
+    #save button
     def save(self):
         self.ui.b_save.setEnabled(False)
         self.ui.cb_quality.setEnabled(False)
@@ -61,6 +63,7 @@ class App():
             self.ui.cb_quality.setEnabled(True)
             print(e)
 
+    #cancel button
     def cancel(self):
         self.ui.stackedWidget.setCurrentWidget(self.ui.p_load)
         self.ui.cb_quality.clear()
@@ -74,6 +77,7 @@ class App():
         self.Window.show()
         sys.exit(self.app.exec_())
 
+#Donwload function
 class DownloadV(QtCore.QObject):
     signal_prog = QtCore.pyqtSignal(int)
     
@@ -137,7 +141,7 @@ class DownloadV(QtCore.QObject):
         self.signal_prog.emit(int((stream.filesize - remaining)/stream.filesize*100))
 
         
-
+#Thread to download
 class ThreadDownload(QtCore.QThread):
     signal_end = QtCore.pyqtSignal()
     signal_error = QtCore.pyqtSignal()
@@ -156,6 +160,7 @@ class ThreadDownload(QtCore.QThread):
         self.threadactive = False
         self.wait()
 
+#Thread to load streams
 class ThreadLoad(QtCore.QThread):
     signal_end = QtCore.pyqtSignal()
     signal_error = QtCore.pyqtSignal()
@@ -172,7 +177,7 @@ class ThreadLoad(QtCore.QThread):
             self.signal_error.emit()
             print(e)
 
-
+#in progress
 class MyBarLogger(TqdmProgressBarLogger):
     def callback(self, **changes):
         # Every time the logger is updated, this function is called
